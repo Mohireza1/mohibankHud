@@ -6,16 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="A minimalist banking app" />
     <meta name="author" content="Mohireza" />
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <title>Bankist</title>
   </head>
   <body>
     <header class="flex">
-      <p class="header__welcome">Welcome back, <span class="welcome__user">Mohireza</span></p>
+      <p class="header__welcome">
+        Welcome back, <span class="welcome__user">Mohireza</span>
+      </p>
       <div class="header__logo"><h1>Mohibank</h1></div>
       <div class="header__login">
-        <input type="text" class="login__input login__input--user" placeholder="Username"/>
-        <input type="text" class="login__input login__input--pass" placeholder="Pass"/>
+        <input
+          type="text"
+          class="login__input login__input--user"
+          placeholder="Username"
+        />
+        <input
+          type="text"
+          class="login__input login__input--pass"
+          placeholder="Pass"
+        />
         <button class="inputs__login">→</button>
       </div>
     </header>
@@ -28,7 +38,20 @@
         <p class="balance__current">$4345</p>
       </div>
       <section class="info">
-        <section class="info__transactions">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit repudiandae suscipit laboriosam, ad voluptas nulla inventore ex sit minima molestias maxime. Maiores ipsam vero vel. Explicabo nam eos nostrum repellat fugiat doloribus in expedita atque ratione ea dignissimos magni, nihil aut voluptatibus dolor facere ipsum placeat eveniet deserunt quidem alias temporibus perferendis sequi quasi? Maxime cum, aperiam aliquid perspiciatis vel ea earum asperiores optio animi dignissimos nobis cupiditate veniam!</section>
+        <section class="info__transactions">
+          <div class="trasnactions__movement">
+            <div class="movement__move">
+              <div class="move__label move__label--in">1. deposit</div>
+              <div class="move__date">22/04/02</div>
+              <div class="move__amount">$500</div>
+            </div>
+            <div class="movement__move">
+              <div class="move__label move__label--out">2. withdraw</div>
+              <div class="move__date">22/04/02</div>
+              <div class="move__amount">$500</div>
+            </div>
+          </div>
+        </section>
         <div class="info__form info__form--transfer">
           <p class="form__title">Transfer money</p>
           <div class="form__input-container flex">
@@ -54,7 +77,7 @@
         <div class="info__form info__form--loan">
           <p class="form__title">Request loan</p>
           <div class="form__input-container form__input-container--loan flex">
-            <div class="form__input-group ">
+            <div class="form__input-group">
               <input
                 type="number"
                 class="input-group__input input-group__input--loan"
@@ -92,19 +115,27 @@
       <section class="details flex">
         <div class="details__sums flex">
           <div class="sums__num sums__num--in">
-            <p class="num__text">in: <span class="num__number num__number--in">$3205</span></p>
+            <p class="num__text">
+              in: <span class="num__number num__number--in">$3205</span>
+            </p>
           </div>
           <div class="sums__num sums__num--out">
-            <p class="num__text">out: <span class="num__number num__number--out">$1123</span></p>
-            </div>
+            <p class="num__text">
+              out: <span class="num__number num__number--out">$1123</span>
+            </p>
+          </div>
           <div class="sums__num sums__num--interest">
-            <p class="num__text">interest: <span class="num__number num__number--interest">$532</span></p>
-            </div>
+            <p class="num__text">
+              interest:
+              <span class="num__number num__number--interest">$532</span>
+            </p>
           </div>
-          <button class="details__sort">↓ SORT</button>
-          <div class="details__timer">
-            <p class="timer__text">You will be logged out in <span class="timer__time">05:00</span></p>
-          </div>
+        </div>
+        <button class="details__sort">↓ SORT</button>
+        <div class="details__timer">
+          <p class="timer__text">
+            You will be logged out in <span class="timer__time">05:00</span>
+          </p>
         </div>
       </section>
     </main>
