@@ -24,6 +24,9 @@ body {
 .flex {
   display: flex;
 }
+.hidden {
+  display: none;
+}
 header {
   justify-content: space-between;
   align-items: center;
@@ -33,7 +36,7 @@ header {
   text-align: center;
 }
 .header__welcome {
-  font-size: 2rem;
+  font-size: 1.7rem;
 }
 .header__logo {
   text-transform: uppercase;
@@ -57,7 +60,7 @@ header {
 ::placeholder {
   color: rgb(178, 178, 178);
 }
-.inputs__login {
+.inputs__login--btn {
   background-color: transparent;
   border: none;
   font-size: 2.2rem;
@@ -69,7 +72,7 @@ main {
   max-width: 1000px;
   padding: 1rem;
   transition: all 1s;
-  opacity: 100%;
+  opacity: 0%;
 }
 .balance {
   width: 100%;
@@ -197,7 +200,7 @@ main {
 .form__input-container--loan {
   justify-content: flex-start;
   width: 100%;
-  margin-inline-start: 4rem;
+  margin-inline-start: 7rem;
 }
 .input-group__text {
   font-size: 1.3rem;
@@ -249,10 +252,13 @@ button {
   gap: 1rem;
 }
 .sums__num {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-transform: uppercase;
 }
 .num__number {
   font-size: 2.5rem;
+  font-weight: 400;
 }
 .num__number--interest,
 .num__number--in {

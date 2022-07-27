@@ -1,9 +1,22 @@
 // Data
 const account1 = {
   owner: 'Jonas Schmedtmann',
-  movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
+  movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
   interestRate: 1.2, // %
   pin: 1111,
+
+  movementsDates: [
+    '2019-11-18T21:31:17.178Z',
+    '2019-12-23T07:42:02.383Z',
+    '2020-01-28T09:15:04.904Z',
+    '2020-04-01T10:17:24.185Z',
+    '2020-05-08T14:11:59.604Z',
+    '2020-05-27T17:01:17.194Z',
+    '2020-07-11T23:36:17.929Z',
+    '2020-07-12T10:51:36.790Z',
+  ],
+  currency: 'EUR',
+  locale: 'pt-PT', // de-DE
 };
 
 const account2 = {
@@ -11,46 +24,217 @@ const account2 = {
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
+
+  movementsDates: [
+    '2019-11-01T13:15:33.035Z',
+    '2019-11-30T09:48:16.867Z',
+    '2019-12-25T06:04:23.907Z',
+    '2020-01-25T14:18:46.235Z',
+    '2020-02-05T16:33:06.386Z',
+    '2020-04-10T14:43:26.374Z',
+    '2020-06-25T18:49:59.371Z',
+    '2020-07-26T12:01:20.894Z',
+  ],
+  currency: 'USD',
+  locale: 'en-US',
 };
 
-const account3 = {
-  owner: 'Steven Thomas Williams',
-  movements: [200, -200, 340, -300, -20, 50, 400, -460],
-  interestRate: 0.7,
-  pin: 3333,
-};
-
-const account4 = {
-  owner: 'Sarah Smith',
-  movements: [430, 1000, 700, 50, 90],
-  interestRate: 1,
-  pin: 4444,
-};
-
-const accounts = [account1, account2, account3, account4];
+const accounts = [account1, account2];
 
 // Elements
-const labelWelcome = document.querySelector('.welcome');
-const labelDate = document.querySelector('.date');
-const labelBalance = document.querySelector('.balance__value');
-const labelSumIn = document.querySelector('.summary__value--in');
-const labelSumOut = document.querySelector('.summary__value--out');
-const labelSumInterest = document.querySelector('.summary__value--interest');
-const labelTimer = document.querySelector('.timer');
+const labelWelcome = document.querySelector('.header__welcome');
+const labelDate = document.querySelector('.text-container__date');
+const labelBalance = document.querySelector('.balance__current');
+const labelSumIn = document.querySelector('.num__number--in');
+const labelSumOut = document.querySelector('.num__number--out');
+const labelSumInterest = document.querySelector('.num__number--interest');
+const labelTimer = document.querySelector('.timer__time');
 
-const containerApp = document.querySelector('.app');
-const containerMovements = document.querySelector('.movements');
+const containerApp = document.querySelector('main');
+const containerMovements = document.querySelector('.info__transactions');
 
-const btnLogin = document.querySelector('.login__btn');
-const btnTransfer = document.querySelector('.form__btn--transfer');
-const btnLoan = document.querySelector('.form__btn--loan');
-const btnClose = document.querySelector('.form__btn--close');
-const btnSort = document.querySelector('.btn--sort');
+const btnLogin = document.querySelector('.inputs__login--btn');
+const btnTransfer = document.querySelector('.input-group__button--transfer');
+const btnLoan = document.querySelector('.input-group__button--loan');
+const btnClose = document.querySelector('.input-group__button--close');
+const btnSort = document.querySelector('.details__sort');
 
 const inputLoginUsername = document.querySelector('.login__input--user');
-const inputLoginPin = document.querySelector('.login__input--pin');
-const inputTransferTo = document.querySelector('.form__input--to');
-const inputTransferAmount = document.querySelector('.form__input--amount');
-const inputLoanAmount = document.querySelector('.form__input--loan-amount');
-const inputCloseUsername = document.querySelector('.form__input--user');
-const inputClosePin = document.querySelector('.form__input--pin');
+const inputLoginPin = document.querySelector('.login__input--pass');
+const inputTransferTo = document.querySelector(
+  '.input-group__input--transfer-to'
+);
+const inputTransferAmount = document.querySelector(
+  '.input-group__input--transfer-amount'
+);
+const inputLoanAmount = document.querySelector(
+  '.input-group__input--loan-amount'
+);
+const inputCloseUsername = document.querySelector(
+  '.input-group__input--close-user'
+);
+const inputClosePin = document.querySelector('.input-group__input--close-pass');
+
+// Functions //
+
+// Username maker
+const userNameAdder = accs => {
+  accs.forEach(obj => {
+    obj.username = obj.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+};
+userNameAdder(accounts);
+
+// Diplay transactions
+const displayMoves = (account, sort = false) => {
+  containerMovements.innerHTML = '';
+  const time = new Date().toLocaleString();
+  const movs = sort
+    ? account.movements.slice().sort((a, b) => a - b)
+    : account.movements;
+  movs.forEach((move, i) => {
+    const text = move > 0 ? 'deposit' : 'withdraw';
+    const type = move > 0 ? 'in' : 'out';
+    const moveText = `       <div class="movement__move">
+            <div class="move__label move__label--${type}">${
+      i + 1
+    }. ${text}</div>
+              <div class="move__date">${time}</div>
+              <div class="move__amount">$${move.toFixed(2)}</div>
+            </div>`;
+    containerMovements.insertAdjacentHTML('afterbegin', moveText);
+  });
+};
+
+// Display balance
+const displayBalance = account => {
+  const balance = account.movements.reduce((acc, move) => acc + move, 0);
+  labelBalance.textContent = `$${+balance.toFixed(2)}`;
+};
+
+// Display summary
+const displaySum = account => {
+  const deposit = account.movements
+    .filter(move => move > 0)
+    .reduce((acc, move) => acc + move, 0);
+  const withdraw = Math.abs(
+    account.movements
+      .filter(move => move < 0)
+      .reduce((acc, move) => acc + move, 0)
+  );
+  const interest = account.movements
+    .filter(move => move > 0)
+    .map(move => (move * 1.2) / 100)
+    .filter(int => int > 1)
+    .reduce((acc, int) => acc + int, 0);
+  labelSumIn.textContent = `$${deposit.toFixed(2)}`;
+  labelSumOut.textContent = `$${withdraw.toFixed(2)}`;
+  labelSumInterest.textContent = `$${+interest.toFixed(2)}`;
+};
+
+// UI update
+const updateUi = user => {
+  displayBalance(user);
+  displayMoves(user);
+  displaySum(user);
+};
+
+let currentUser;
+
+// Transfer
+const transfer = (user, amount) => {
+  const balance = currentUser.movements.reduce((acc, move) => acc + move, 0);
+  const target = accounts.find(acc => acc.username === user);
+  if (amount > balance) {
+    console.log('no amount');
+    return;
+  } else if (!target) {
+    console.log('no user');
+    return;
+  } else if (target === currentUser) {
+    console.log('same user');
+    return;
+  } else if (amount <= 0) {
+    console.log('0 or negative amount');
+    return;
+  }
+  target.movements.push(+amount);
+  currentUser.movements.push(+(amount * -1 - (amount * 0.5) / 100).toFixed(2));
+  updateUi(currentUser);
+};
+
+// Loan
+const loanRequest = amount => {
+  // Loan rule check
+  if (currentUser.movements.some(val => val > (amount * 10) / 100)) {
+    // Add amount
+    currentUser.movements.push(Math.round(amount));
+    // Update UI
+    updateUi(currentUser);
+  }
+};
+
+// Event Listeners //
+
+// Login submit
+btnLogin.addEventListener('click', e => {
+  e.preventDefault();
+  currentUser = accounts.find(acc => acc.username === inputLoginUsername.value);
+  if (currentUser?.pin === +inputLoginPin.value) {
+    inputLoginUsername.value = inputLoginPin.value = '';
+    updateUi(currentUser);
+    labelWelcome.innerHTML = `Welcome back, <span style="font-weight: 600;">${currentUser.owner}</span>`;
+    containerApp.style.opacity = '100% ';
+  }
+});
+
+// Transfer submit
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+  transfer(inputTransferTo.value, inputTransferAmount.value);
+  inputTransferTo.value = inputTransferAmount.value = '';
+});
+
+// Loan submit
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
+  // Request loan
+  loanRequest(Number(inputLoanAmount.value));
+  // Clear inputs
+  inputLoanAmount.value = '';
+});
+
+// Delete submit
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+  // Check if account is correct
+  if (
+    inputCloseUsername.value === currentUser.username &&
+    currentUser.pin === +inputClosePin.value
+  ) {
+    // Delete account
+    const dltAcc = accounts.findIndex(acc => acc === currentUser);
+    accounts.splice(dltAcc, 1);
+    // Hide UI
+    containerApp.style.opacity = '0%';
+    window.scrollTo({ top: 0 });
+  }
+  // Clear the inputs
+  inputCloseUsername.value = inputClosePin.value = '';
+});
+
+// Sort
+let sorted = false;
+
+btnSort.addEventListener('click', e => {
+  e.preventDefault();
+  displayMoves(currentUser, !sorted);
+  sorted = !sorted;
+});
+
+const dices = Array.from({ length: 100 }, () => Math.floor(Math.random() * 7));
+console.log(dices);
