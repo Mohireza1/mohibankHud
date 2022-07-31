@@ -13,10 +13,10 @@ const account1 = {
     '2020-05-08T14:11:59.604Z',
     '2020-05-27T17:01:17.194Z',
     '2020-07-11T23:36:17.929Z',
-    '2020-07-12T10:51:36.790Z',
+    '2022-07-27T07:50:03.030Z',
   ],
   currency: 'EUR',
-  locale: 'pt-PT', // de-DE
+  locale: 'de-DE', // de-DE
 };
 
 const account2 = {
@@ -75,7 +75,31 @@ const inputCloseUsername = document.querySelector(
 );
 const inputClosePin = document.querySelector('.input-group__input--close-pass');
 
+// Time
+const timeFull = new Date();
+const hour = timeFull.getHours();
+const minute = timeFull.getMinutes();
+const time = timeFull.toLocaleString();
+const isoTime = timeFull.toISOString();
+
 // Functions //
+
+// Currency formatter
+const currencyFormat = (loc, curr) => val =>
+  new Intl.NumberFormat(loc, {
+    style: 'currency',
+    currency: curr,
+  }).format(val);
+
+// Time formatter
+const intlTimeFormat =
+  (loc, lengthTime = 'short', lengthDate = 'long') =>
+  val =>
+    new Intl.DateTimeFormat(loc, {
+      timeStyle: lengthTime,
+      dateStyle: lengthDate,
+      hourCycle: 'h24',
+    }).format(val);
 
 // Username maker
 const userNameAdder = accs => {
@@ -90,21 +114,37 @@ const userNameAdder = accs => {
 userNameAdder(accounts);
 
 // Diplay transactions
+
 const displayMoves = (account, sort = false) => {
+  // Sorting mechanism
   containerMovements.innerHTML = '';
-  const time = new Date().toLocaleString();
   const movs = sort
     ? account.movements.slice().sort((a, b) => a - b)
     : account.movements;
+
+  // Shows movements
   movs.forEach((move, i) => {
+    const moveDate = new Date(currentUser.movementsDates[i]);
+    const hoursPassed = (timeFull - moveDate) / (1000 * 60 * 60);
+    const moveHour = moveDate.getHours();
+    const moveMinute = moveDate.getMinutes();
+    const minutesPassed = hour * 60 + minute - (moveHour * 60 + moveMinute);
+    const plural = new Intl.PluralRules().select(minutesPassed);
+
+    const moveValue = currencyFormat(account.locale, account.currency)(move);
+
+    const moveTime =
+      hoursPassed < 1
+        ? `${minutesPassed} minute${plural === 'one' ? '' : 's'} ago`
+        : `${intlTimeFormat(account.locale, 'short', 'short')(moveDate)}`;
     const text = move > 0 ? 'deposit' : 'withdraw';
     const type = move > 0 ? 'in' : 'out';
     const moveText = `       <div class="movement__move">
             <div class="move__label move__label--${type}">${
       i + 1
     }. ${text}</div>
-              <div class="move__date">${time}</div>
-              <div class="move__amount">$${move.toFixed(2)}</div>
+              <div class="move__date">${moveTime}</div>
+              <div class="move__amount">${moveValue}</div>
             </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', moveText);
   });
@@ -113,11 +153,19 @@ const displayMoves = (account, sort = false) => {
 // Display balance
 const displayBalance = account => {
   const balance = account.movements.reduce((acc, move) => acc + move, 0);
-  labelBalance.textContent = `$${+balance.toFixed(2)}`;
+  labelBalance.textContent = `${new Intl.NumberFormat(currentUser.locale, {
+    style: 'currency',
+    currency: currentUser.currency,
+  }).format(balance.toFixed(2))}`;
 };
 
 // Display summary
 const displaySum = account => {
+  // Summary currency
+  const summeryCurrencyDefault = currencyFormat(
+    account.locale,
+    account.currency
+  );
   const deposit = account.movements
     .filter(move => move > 0)
     .reduce((acc, move) => acc + move, 0);
@@ -131,19 +179,17 @@ const displaySum = account => {
     .map(move => (move * 1.2) / 100)
     .filter(int => int > 1)
     .reduce((acc, int) => acc + int, 0);
-  labelSumIn.textContent = `$${deposit.toFixed(2)}`;
-  labelSumOut.textContent = `$${withdraw.toFixed(2)}`;
-  labelSumInterest.textContent = `$${+interest.toFixed(2)}`;
+  labelSumIn.textContent = summeryCurrencyDefault(deposit.toFixed(2));
+  labelSumOut.textContent = summeryCurrencyDefault(withdraw.toFixed(2));
+  labelSumInterest.textContent = summeryCurrencyDefault(interest.toFixed(2));
 };
 
-// UI update
-const updateUi = user => {
-  displayBalance(user);
-  displayMoves(user);
-  displaySum(user);
+// As of date setter
+const asOfDate = account => {
+  labelDate.textContent = intlTimeFormat(account.locale, 'medium', 'long')();
 };
 
-let currentUser;
+let currentUser, timer;
 
 // Transfer
 const transfer = (user, amount) => {
@@ -163,19 +209,53 @@ const transfer = (user, amount) => {
     return;
   }
   target.movements.push(+amount);
-  currentUser.movements.push(+(amount * -1 - (amount * 0.5) / 100).toFixed(2));
+  target.movementsDates.push(isoTime);
+  currentUser.movements.push(+amount);
+  currentUser.movementsDates.push(isoTime);
   updateUi(currentUser);
 };
 
 // Loan
 const loanRequest = amount => {
-  // Loan rule check
-  if (currentUser.movements.some(val => val > (amount * 10) / 100)) {
-    // Add amount
-    currentUser.movements.push(Math.round(amount));
-    // Update UI
-    updateUi(currentUser);
-  }
+  setTimeout(() => {
+    // Loan rule check
+    if (currentUser.movements.some(val => val > (amount * 10) / 100)) {
+      // Add amount and time
+      currentUser.movements.push(Math.round(amount));
+      currentUser.movementsDates.push(isoTime);
+
+      // Update UI
+      updateUi(currentUser);
+    }
+  }, 2000);
+};
+
+const timerFunction = () => {
+  let time = 300;
+  const tick = () => {
+    const minute = String(Math.trunc(time / 60)).padStart(2, '0');
+    const second = String(Math.trunc(time % 60)).padStart(2, '0');
+    labelTimer.textContent = `${minute}:${second}`;
+    time--;
+    if (time === -1) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Login to see your account info';
+      containerApp.style.opacity = '0';
+    }
+  };
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
+// UI update
+const updateUi = user => {
+  displayBalance(user);
+  displayMoves(user);
+  displaySum(user);
+  asOfDate(user);
+  if (timer) clearInterval(timer);
+  timer = timerFunction();
 };
 
 // Event Listeners //
@@ -189,6 +269,8 @@ btnLogin.addEventListener('click', e => {
     updateUi(currentUser);
     labelWelcome.innerHTML = `Welcome back, <span style="font-weight: 600;">${currentUser.owner}</span>`;
     containerApp.style.opacity = '100% ';
+    if (timer) clearInterval(timer);
+    timer = timerFunction();
   }
 });
 
@@ -235,6 +317,3 @@ btnSort.addEventListener('click', e => {
   displayMoves(currentUser, !sorted);
   sorted = !sorted;
 });
-
-const dices = Array.from({ length: 100 }, () => Math.floor(Math.random() * 7));
-console.log(dices);

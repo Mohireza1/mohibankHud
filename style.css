@@ -1,10 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;500;600;900&display=swap');
+
+*,
 *::after,
 *::before {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -12,9 +15,10 @@ input::-webkit-inner-spin-button {
 }
 html {
   font-size: 10px;
-  height: 100%;
+  height: 95%;
   width: 100%;
   font-family: 'Poppins', sans-serif;
+  overflow: auto;
 }
 body {
   min-height: 100%;
@@ -31,6 +35,7 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 0 2rem;
+  margin-block-start: 1.5rem;
   justify-self: start;
   /* width: 100%; */
   text-align: center;
@@ -68,7 +73,7 @@ header {
 main {
   display: grid;
   place-items: center;
-  margin: 2rem auto;
+  margin: 0.5rem auto;
   max-width: 1000px;
   padding: 1rem;
   transition: all 1s;
@@ -76,15 +81,14 @@ main {
 }
 .balance {
   width: 100%;
-  padding: 0 1rem;
   justify-content: space-between;
   align-items: center;
-  margin-block-end: 1rem;
 }
 .text-container__text {
   font-size: 2.3rem;
   margin: 0;
   font-weight: 500;
+  text-align: start;
 }
 .text-container__date {
   font-size: 1.4rem;
@@ -157,9 +161,6 @@ main {
   gap: 2rem;
   border-radius: 10px;
 }
-.info__form:first-of-type {
-  margin-block-start: 1rem;
-}
 .info__form:last-of-type {
   margin-block-end: 1rem;
 }
@@ -198,9 +199,8 @@ main {
   align-items: center;
 }
 .form__input-container--loan {
-  justify-content: flex-start;
   width: 100%;
-  margin-inline-start: 7rem;
+  margin-inline-start: 10rem;
 }
 .input-group__text {
   font-size: 1.3rem;
@@ -247,6 +247,7 @@ button {
   padding-inline: 1rem;
   font-size: 1.3rem;
   width: 100%;
+  margin-block-start: 1rem;
 }
 .details__sums {
   gap: 1rem;
@@ -257,7 +258,7 @@ button {
   text-transform: uppercase;
 }
 .num__number {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 400;
 }
 .num__number--interest,
